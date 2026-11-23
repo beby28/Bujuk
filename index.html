@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buat Kamu ❤️</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ffe6ee, #ffc2d4, #ffafcc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* HATI JATUH DARI ATAS */
+  .heart {
+    position: fixed;
+    top: -20px;
+    font-size: 20px;
+    animation: jatuh linear infinite;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @keyframes jatuh {
+    to { transform: translateY(110vh) rotate(360deg); }
+  }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(255,77,109,0.3);
+    max-width: 350px;
+    width: 90%;
+    position: relative;
+    z-index: 2;
+    animation: muncul 0.8s ease;
+  }
+  @keyframes muncul {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* KUCING GOYANG */
+  .kucing {
+    width: 180px;
+    border-radius: 15px;
+    animation: goyang 2s ease-in-out infinite;
+  }
+  @keyframes goyang {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg) scale(1.05); }
+  }
+
+  h1 { font-size: 24px; color: #ff4d6d; animation: degdeg 1s infinite; }
+  @keyframes degdeg {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  p { color: #555; }
+
+  .buttons { margin-top: 20px; position: relative; height: 80px; }
+  button {
+    padding: 13px 26px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #mauBtn {
+    background: #ff4d6d;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255,77,109,0.5);
+    animation: lompat 1.2s infinite;
+  }
+  @keyframes lompat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  #gamauBtn {
+    background: #eee;
+    color: #333;
+    position: absolute;
+    left: 185px;
+    transition: 0.25s;
+  }
+  #gamauBtn.gemetar {
+    animation: gemetar 0.3s;
+  }
+  @keyframes gemetar {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-5px) rotate(-3deg); }
+    75% { transform: translateX(5px) rotate(3deg); }
+  }
+
+  /* CONFETTI */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    z-index: 99;
+    pointer-events: none;
+    animation: confettiJatuh 3s linear forwards;
+  }
+  @keyframes confettiJatuh {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  #pesan { font-weight: bold; color: #ff4d6d; min-height: 20px; }
+
+  .peluk {
+    font-size: 60px;
+    display: none;
+    animation: pelukAnim 1s infinite;
+  }
+  @keyframes pelukAnim {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HATI-HATI JATUH OTOMATIS LEWAT JS -->
+
+<div class="card">
+  <div class="peluk" id="peluk">🥰🫶💖</div>
+  <img class="kucing" id="kucingImg" src="https://media.tenor.com/ivdVhGg4eY8AAAAC/cute-cat.gif" alt="kucing">
+  <h1 id="judul">Sayang, masih badmood ya? 🥺</h1>
+  <p id="teks">Maafin dede ya. Mau baikan gak?</p>
+  
+  <div class="buttons">
+    <button id="mauBtn" onclick="diterima()">Mau Baikan ❤️</button>
+    <button id="gamauBtn" onmouseover="kabur()" onclick="kabur()">Gamau 😤</button>
+  </div>
+  <p id="pesan"></p>
+</div>
+
+<script>
+  // 1. BIKIN HATI JATUH TERUS
+  function bikinHati() {
+    const hati = document.createElement('div');
+    hati.classList.add('heart');
+    hati.innerText = ['❤️','💖','💗','💕','✨'][Math.floor(Math.random()*5)];
+    hati.style.left = Math.random() * 100 + 'vw';
+    hati.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    hati.style.fontSize = (Math.random() * 15 + 15) + 'px';
+    document.body.appendChild(hati);
+    setTimeout(() => hati.remove(), 6000);
+  }
+  setInterval(bikinHati, 500);
+
+  // 2. TOMBOL GAMAU KABUR + GEMETAR
+  let kaburCount = 0;
+  const kalimatGamau = [
+    "Eh gabisa pencet, coba lagi 😝",
+    "Yakin gamau? 🥺",
+    "Tombolnya licin ya?",
+    "Udah lah, pencet yang merah aja",
+    "dede tau aa udah senyum dikit tuh 😏",
+    "Yahhh kok masih gamau sih 😭"
+  ];
+
+  function kabur() {
+    const btn = document.getElementById('gamauBtn');
+    btn.classList.remove('gemetar');
+    void btn.offsetWidth; // restart animasi
+    btn.classList.add('gemetar');
+
+    const x = Math.random() * 180 - 20;
+    const y = Math.random() * 60 - 10;
+    btn.style.left = x + 'px';
+    btn.style.top = y + 'px';
+    document.getElementById('pesan').innerText = kalimatGamau[kaburCount % kalimatGamau.length];
+    kaburCount++;
+
+    // Kucing jadi sedih
+    if(kaburCount > 3) {
+      document.getElementById('kucingImg').src = "https://media.tenor.com/9z8a7a2b3c4AAAAC/sad-cat.gif";
+    }
+  }
+
+  // 3. CONFETTI PAS DITERIMA
+  function hujanConfetti() {
+    const warna = ['#ff4d6d','#ffafcc','#ffc300','#00d4ff','#80ed99','#b388ff'];
+    for(let i=0; i<80; i++) {
+      const c = document.createElement('div');
+      c.classList.add('confetti');
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.background = warna[Math.floor(Math.random()*warna.length)];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      c.style.animationDuration = (Math.random()*2+2) + 's';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 4000);
+    }
+  }
+
+  function diterima() {
+    hujanConfetti();
+    document.getElementById('peluk').style.display = 'block';
+    document.getElementById('judul').innerText = "YEEY! Makasih sayang 🥰";
+    document.getElementById('teks').innerText = "dede janji gak bikin aa badmood lagi, gabakal bikin aa kecewa lagi, dede bakal berusaha bikin aa bahagia terus";
+    document.getElementById('pesan').innerText = "I Love You ❤️❤️❤️";
+    document.getElementById('gamauBtn').style.display = 'none';
+    document.getElementById('mauBtn').innerText = "Udah Baikan 🫶";
+    document.getElementById('mauBtn').style.animation = 'none';
+    document.getElementById('kucingImg').src = "https://media.tenor.com/ivdVhGg4eY8AAAAC/cute-cat.gif";
+  }
+</script>
+
+</body>
+</html>
